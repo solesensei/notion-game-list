@@ -1,0 +1,3 @@
+[submodule "ngl/api/steam"]
+	path = ngl/api/steam
+	url = git@github.com:smiley/steamapi.git
