@@ -49,7 +49,7 @@ class SteamGamesLibrary(GamesLibrary):
         return self.IMAGE_HOST + f"{app_id}/{img_hash}.jpg"
 
     def _fetch_library_games(self):
-        if self._games is None:
+        if not self._games:
             try:
                 self._games = {
                     g.id: GameInfo(

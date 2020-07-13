@@ -7,17 +7,14 @@ class ServiceError(Exception):
 
     def __init__(self, msg=None, error=None):
         self.msg = str(error) if msg is None and error else msg
-        self.error = error if error is None else error.__class__.__name__
+        self.error = self.__class__.__name__ if error is None else error.__class__.__name__
         super().__init__(self.msg)
 
     def __str__(self):
-        msg = color.r(self.error) if self.error else ""
+        msg = color.r(self.error)
 
         if self.msg:
-            msg += f" :{self.msg}" if msg else color.r(self.msg)
-
-        if not msg:
-            return color.r(self.__class__.__name__)
+            msg += color.r(f": {self.msg}")
 
         return msg
 

@@ -1,6 +1,10 @@
+import typing as tp
+
 from notion.block import CollectionViewPageBlock
 from notion.client import NotionClient
 from notion.operations import build_operation
+
+from ngl.games.base import GameInfo
 
 from .utils import echo, color
 
@@ -39,6 +43,19 @@ class NotionGameList:
 
     def connect_page(self, url):
         pass
+
+    def _add_row(self, row_data, view) -> bool:
+        pass
+
+    def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock) -> bool:
+        pass
+
+    def import_game_list(self, game_list: tp.List[GameInfo], game_page: CollectionViewPageBlock) -> tp.List[GameInfo]:
+        errors = []
+        for game in game_list:
+            if not self.add_game(game, game_page):
+                errors.append(game)
+        return errors
 
     @staticmethod
     def _game_list_schema():
