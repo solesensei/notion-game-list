@@ -11,5 +11,7 @@ STEAM_TOKEN = os.getenv("STEAM_TOKEN")
 STEAM_USER = os.getenv("STEAM_USER")
 # ---------------------------------
 
+echo.g("Logging in Notion...")
 ngl = NotionGameList.login(token_v2=NOTION_TOKEN)
-steam = SteamGamesLibrary.login(api_token=STEAM_TOKEN, user_id=STEAM_USER)
+echo.g("Logging in Steam...")
+steam = SteamGamesLibrary.login(api_key=STEAM_TOKEN, user_id=STEAM_USER)

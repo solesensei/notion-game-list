@@ -20,18 +20,18 @@ class NotionGameList:
             token_v2 = input(color.c("Token: ")).strip()
         return cls(token_v2=token_v2)
 
-    def create_game_page(self, name: str = "Notion Game List"):
-        page = self.client.current_space.add_page(name)
+    def create_game_page(self, title: str = "Notion Game List", description: str = "My game list"):
+        page = self.client.current_space.add_page(title + " [generated]")
         v = page.children.add_new(CollectionViewPageBlock)
         v.collection = self.client.get_collection(self.client.create_record("collection", parent=v, schema=self._game_list_schema()))
-        v.title = "Game List"
-        v.description = "My game list"
+        v.title = title
+        v.description = description
         view = v.views.add_new(view_type="table")
         with self.client.as_atomic_transaction():
             self.client.submit_transaction(
                 build_operation(view.id, path=[], command="update", args=self._properites_format(), table="collection_view")
             )
-        with ngl.client.as_atomic_transaction():
+        with self.client.as_atomic_transaction():
             self.client.submit_transaction(
                 build_operation(v.collection.id, path=["icon"], command="set", args=self._icon, table="collection")
             )
@@ -40,7 +40,8 @@ class NotionGameList:
     def connect_page(self, url):
         pass
 
-    def _game_list_schema(self):
+    @staticmethod
+    def _game_list_schema():
         return {
             "title": {"name": "Title", "type": "title"},
             "status": {
@@ -89,7 +90,8 @@ class NotionGameList:
             "time": {"name": "Time", "type": "date"},
         }
 
-    def _properites_format(self):
+    @staticmethod
+    def _properites_format():
         return {
             "format": {
                 "table_properties": [

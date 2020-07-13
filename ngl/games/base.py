@@ -2,16 +2,26 @@ import typing as tp
 
 from abc import abstractmethod, ABCMeta
 
-TGameID = type("unique game identifier in library")
+TGameID = tp.Union[int, str]  # unique game identifier in library
 
 
 class GameInfo:
 
-    def __init__(self, game_id: TGameID, game_name: str, game_release_date: str, game_poster_uri: tp.Optional[str] = None):
+    def __init__(
+        self,
+        game_id: TGameID,
+        game_name: str,
+        game_release_date: tp.Optional[str] = None,
+        game_playtime: tp.Optional[str] = None,
+        game_logo_uri: tp.Optional[str] = None,
+        game_icon_uri: tp.Optional[str] = None,
+    ):
         self.id = game_id
         self.name = game_name
         self.release_date = game_release_date
-        self.poster_uri = game_poster_uri
+        self.playtime = game_playtime
+        self.logo_uri = game_logo_uri
+        self.icon_uri = game_icon_uri
 
 
 class GamesLibrary(metaclass=ABCMeta):
