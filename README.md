@@ -43,6 +43,8 @@ For notion i used [notion-py client](https://github.com/jamalex/notion-py) writt
 python main.py
 ```
 
+![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)
+
 ## Plans
 
 - connect to existing page
