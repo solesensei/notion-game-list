@@ -2,7 +2,7 @@
 
 All your games inside [Notion](https://notion.so).
 
-![notion-x-steam](https://user-images.githubusercontent.com/24857057/87416431-5f8df200-c5d7-11ea-920f-55f06113d388.png)
+![notion-x-steam](https://user-images.githubusercontent.com/24857057/87418150-eb088280-c5d9-11ea-87b1-ab77979a1b25.png)
 
 ## Requirements
 
