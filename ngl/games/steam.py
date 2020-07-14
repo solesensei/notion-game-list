@@ -51,15 +51,12 @@ class SteamGamesLibrary(GamesLibrary):
         return self.IMAGE_HOST + f"{app_id}/{img_hash}.jpg"
 
     @staticmethod
-    def _playtime_format(playtime_in_seconds):
-        if playtime_in_seconds == 0:
+    def _playtime_format(playtime_in_minutes):
+        if playtime_in_minutes == 0:
             return "never"
-        if playtime_in_seconds < 60:
-            return f"{playtime_in_seconds} seconds"
-        playtime_in_seconds //= 60
-        if playtime_in_seconds < 60:
-            return f"{playtime_in_seconds} minutes"
-        return f"{playtime_in_seconds // 60} hours"
+        if playtime_in_minutes < 120:
+            return f"{playtime_in_minutes} minutes"
+        return f"{playtime_in_minutes // 60} hours"
 
     def _fetch_library_games(self):
         if not self._games:
