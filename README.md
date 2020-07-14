@@ -28,8 +28,11 @@ I used [Web SteamAPI client](https://github.com/smiley/steamapi) written by [@sm
 For notion i used [notion-py client](https://github.com/jamalex/notion-py) written by [@jamalex](https://github.com/jamalex).
 
 **Authentification:**
+
 - Login to [notion.so](https://notion.so) with your regular email and password
 - Open browser cookies and copy `token_v2`
+<img src="https://user-images.githubusercontent.com/24857057/87415393-b4c90400-c5d5-11ea-9f67-79983a95bce9.png" alt="click to open" width="300">
+
 - Pass `token_v2` to system environment variable `NOTION_TOKEN` (optional)
 
 ## Usage
