@@ -21,7 +21,7 @@ try:
     echo.g("Logged into Steam!")
 
     echo.y("Getting Steam library games...")
-    game_list = [steam.get_game_info(id_) for id_ in steam.get_games_list()]
+    game_list = sorted([steam.get_game_info(id_) for id_ in steam.get_games_list()], key=lambda x: x.name)
     if not game_list:
         raise ServiceError(msg="no steam games found")
 
