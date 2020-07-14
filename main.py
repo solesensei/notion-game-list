@@ -41,7 +41,7 @@ try:
         echo.r("Not imported games: ")
         for e in sorted(errors, key=lambda x: x.name):
             echo.r(f"- {e.name}")
-    echo.g(f"\nImported: {imported}/{len(game_list)}\n")
+    echo.g(f"Imported: {imported}/{len(game_list)}\n")
 
 except ServiceError as e:
     echo(e)
