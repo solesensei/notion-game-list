@@ -2,6 +2,8 @@
 
 All your games inside [Notion](https://notion.so).
 
+![notion-x-steam](https://user-images.githubusercontent.com/24857057/87416431-5f8df200-c5d7-11ea-920f-55f06113d388.png)
+
 ## Requirements
 
 Python 3.6+
