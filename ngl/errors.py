@@ -30,5 +30,9 @@ class SteamApiError(ApiError):
     code = 501
 
 
+class SteamApiNotFoundError(SteamApiError):
+    code = 404
+
+
 class NotionApiError(ApiError):
     code = 502

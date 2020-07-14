@@ -1,9 +1,13 @@
 import typing as tp
 import re
+import requests
 
 from ngl.api.steam import steamapi
-from ngl.errors import SteamApiError
-from ngl.utils import echo, color
+from ngl.errors import SteamApiError, SteamApiNotFoundError
+from ngl.models.steam import SteamStoreApp
+from ngl.core import is_valid_link
+from ngl.utils import echo, color, lru_cache
+
 
 from .base import GameInfo, GamesLibrary, TGameID
 
@@ -13,11 +17,37 @@ TSteamApiKey = str
 PLATFORM = "steam"
 
 
+class SteamStoreApi:
+    API_HOST = "https://store.steampowered.com/api/appdetails?appids={}"
+
+    def __init__(self):
+        self.session = requests.Session()
+
+    @lru_cache
+    def get_game_info(self, app_id: int) -> SteamStoreApp:
+        try:
+            r = self.session.get(self.API_HOST.format(app_id), timeout=3)
+            if not r.ok:
+                raise SteamApiError(f"SteamStoreApi error: can't get {r.url}")
+
+            response_body = r.json()[str(app_id)]
+            if not response_body["success"]:
+                raise SteamApiNotFoundError(f"SteamStoreApi App {app_id} unsuccessfull request")
+
+            return SteamStoreApp(**response_body["data"])
+
+        except SteamApiNotFoundError:
+            raise
+        except Exception as e:
+            raise SteamApiError(error=e)
+
+
 class SteamGamesLibrary(GamesLibrary):
     IMAGE_HOST = "http://media.steampowered.com/steamcommunity/public/images/apps/"
 
     def __init__(self, api_key: TSteamApiKey, user_id: TSteamUserID):
         self.api = self._get_api(api_key)
+        self.store = SteamStoreApi()
         self.user = self._get_user(user_id)
         self._games = {}
 
@@ -50,6 +80,16 @@ class SteamGamesLibrary(GamesLibrary):
     def _image_link(self, app_id: int, img_hash: str):
         return self.IMAGE_HOST + f"{app_id}/{img_hash}.jpg"
 
+    def _get_bg_image(self, app_id: int) -> tp.Optional[str]:
+        _bg_img = "https://steamcdn-a.akamaihd.net/steam/apps/{app_id}/{bg}.jpg"
+        bg_link = _bg_img.format(app_id=app_id, bg="page.bg")
+        if is_valid_link(bg_link):
+            return bg_link
+        bg_link = _bg_img.format(app_id=app_id, bg="page_bg_generated")
+        if is_valid_link(bg_link):
+            return bg_link
+        return None
+
     @staticmethod
     def _playtime_format(playtime_in_minutes):
         if playtime_in_minutes == 0:
@@ -61,17 +101,20 @@ class SteamGamesLibrary(GamesLibrary):
     def _fetch_library_games(self):
         if not self._games:
             try:
-                self._games = {
-                    g.id: GameInfo(
+                for g in self.user.games:
+                    steam_game = self.store.get_game_info(g.id)
+                    game_logo_uri = steam_game.header_image if steam_game.header_image else self._image_link(g.id, g.img_logo_url)
+                    self._games[g.id] = GameInfo(
                         game_id=g.id,
                         game_name=g.name,
                         game_platforms=[PLATFORM],
+                        game_release_date=steam_game.release_date,
                         game_playtime=self._playtime_format(g.playtime_forever),
-                        game_logo_uri=self._image_link(g.id, g.img_logo_url),
+                        game_logo_uri=game_logo_uri,
+                        game_bg_uri=self._get_bg_image(g.id),
                         game_icon_uri=self._image_link(g.id, g.img_icon_url),
+                        game_free=steam_game.is_free,
                     )
-                    for g in self.user.games
-                }
             except Exception as e:
                 raise SteamApiError(error=e)
 

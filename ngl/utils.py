@@ -1,6 +1,7 @@
 import sys
 
 from termcolor import colored, cprint
+from functools import lru_cache
 
 if sys.platform == 'win32':
     import colorama

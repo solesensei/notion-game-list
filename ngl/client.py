@@ -87,7 +87,7 @@ class NotionGameList:
         return collection.add_row(**row_data)
 
     def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock) -> bool:
-        row_data = {"title": game.name, "platforms": game.platforms, "notes": f"Playtime: {game.playtime}"}
+        row_data = {"title": game.name, "platforms": game.platforms, "release_date": game.release_date, "notes": f"Playtime: {game.playtime}"}
         row = self._add_row(game_page.collection, **row_data)
         row.icon = game.icon_uri
         with self.client.as_atomic_transaction():
@@ -245,6 +245,7 @@ class NotionGameList:
             },
             "notes": {"name": "Notes", "type": "text"},
             "time": {"name": "Time", "type": "date"},
+            "release_date": {"name": "Release Date", "type": "date"},
         }
 
     @staticmethod
@@ -274,6 +275,11 @@ class NotionGameList:
                     },
                     {
                         "property": "time",
+                        "visible": True,
+                        "width": 200
+                    },
+                    {
+                        "property": "release_date",
                         "visible": True,
                         "width": 200
                     },

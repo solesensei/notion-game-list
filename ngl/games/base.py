@@ -15,7 +15,9 @@ class GameInfo:
         game_release_date: tp.Optional[str] = None,
         game_playtime: tp.Optional[str] = None,
         game_logo_uri: tp.Optional[str] = None,
+        game_bg_uri: tp.Optional[str] = None,
         game_icon_uri: tp.Optional[str] = None,
+        game_free: bool = False
     ):
         self.id = game_id
         self.name = game_name
@@ -23,7 +25,9 @@ class GameInfo:
         self.release_date = game_release_date
         self.playtime = game_playtime
         self.logo_uri = game_logo_uri
+        self.bg_uri = game_bg_uri
         self.icon_uri = game_icon_uri
+        self.free = game_free
 
 
 class GamesLibrary(metaclass=ABCMeta):

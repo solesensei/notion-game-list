@@ -1,4 +1,4 @@
-# Notion Game List ![](https://img.shields.io/badge/version-0.0.1-blue)
+# Notion Game List ![](https://img.shields.io/badge/version-0.0.2-blue)
 
 All your games inside [Notion](https://notion.so).
 
