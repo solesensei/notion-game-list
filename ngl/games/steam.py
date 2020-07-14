@@ -10,6 +10,8 @@ from .base import GameInfo, GamesLibrary, TGameID
 TSteamUserID = tp.Union[str, int]
 TSteamApiKey = str
 
+PLATFORM = "steam"
+
 
 class SteamGamesLibrary(GamesLibrary):
     IMAGE_HOST = "http://media.steampowered.com/steamcommunity/public/images/apps/"
@@ -48,6 +50,17 @@ class SteamGamesLibrary(GamesLibrary):
     def _image_link(self, app_id: int, img_hash: str):
         return self.IMAGE_HOST + f"{app_id}/{img_hash}.jpg"
 
+    @staticmethod
+    def _playtime_format(playtime_in_seconds):
+        if playtime_in_seconds == 0:
+            return "never"
+        if playtime_in_seconds < 60:
+            return f"{playtime_in_seconds} seconds"
+        playtime_in_seconds //= 60
+        if playtime_in_seconds < 60:
+            return f"{playtime_in_seconds} minutes"
+        return f"{playtime_in_seconds // 60} hours"
+
     def _fetch_library_games(self):
         if not self._games:
             try:
@@ -55,7 +68,8 @@ class SteamGamesLibrary(GamesLibrary):
                     g.id: GameInfo(
                         game_id=g.id,
                         game_name=g.name,
-                        game_playtime=g.playtime_forever,
+                        game_platforms=[PLATFORM],
+                        game_playtime=self._playtime_format(g.playtime_forever),
                         game_logo_uri=self._image_link(g.id, g.img_logo_url),
                         game_icon_uri=self._image_link(g.id, g.img_icon_url),
                     )

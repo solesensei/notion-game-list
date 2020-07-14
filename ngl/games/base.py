@@ -11,6 +11,7 @@ class GameInfo:
         self,
         game_id: TGameID,
         game_name: str,
+        game_platforms: tp.List[str],
         game_release_date: tp.Optional[str] = None,
         game_playtime: tp.Optional[str] = None,
         game_logo_uri: tp.Optional[str] = None,
@@ -18,6 +19,7 @@ class GameInfo:
     ):
         self.id = game_id
         self.name = game_name
+        self.platforms = game_platforms
         self.release_date = game_release_date
         self.playtime = game_playtime
         self.logo_uri = game_logo_uri
