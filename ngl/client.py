@@ -158,6 +158,10 @@ class NotionGameList:
                         "value": "Playing"
                     },
                     {
+                        "color": "blue",
+                        "value": "Planned"
+                    },
+                    {
                         "color": "gray",
                         "value": "Stalled"
                     },
