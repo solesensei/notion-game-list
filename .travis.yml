@@ -30,7 +30,6 @@ deploy:
   skip_cleanup: true
   api_key: $GH_TOKEN
   file_glob: true
-  draft: true
   file:
     - "dist/*.exe"
   on:
