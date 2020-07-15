@@ -54,3 +54,4 @@ python main.py -h
 - options for disabling/enabling icons
 - parse recent games
 - login to notion with password
+- add release date
