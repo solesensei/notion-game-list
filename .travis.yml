@@ -22,7 +22,7 @@ install:
   - pip3 install pyinstaller -U
 
 script:
-  - pyinstaller --onefile main.py
+  - pyinstaller --onefile main.py -n "main_$TRAVIS_OS_NAME"
   - sleep 1  # Allow pyinstaller to finish writing to stdout
   - ls -l dist
 
