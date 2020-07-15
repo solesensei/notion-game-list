@@ -101,7 +101,7 @@ class NotionGameList:
     def import_game_list(self, game_list: tp.List[GameInfo], game_page: CollectionViewPageBlock, **kwargs) -> tp.List[GameInfo]:
         errors = []
         for i, game in enumerate(game_list):
-            echo.c(f"Status: {i}/{len(game_list)}", end="\r")
+            echo.c(f"Imported: {i}/{len(game_list)}", end="\r")
             if not self.add_game(game, game_page, **kwargs):
                 errors.append(game)
         return errors

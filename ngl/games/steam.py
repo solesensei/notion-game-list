@@ -25,8 +25,9 @@ class SteamStoreApi:
         self.session = requests.Session()
         self._cache = {}
 
-    @retry(SteamStoreApiError, retry_num=1, initial_wait=30, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded, wait for 30 seconds", debug=True)
+    @retry(SteamStoreApiError, retry_num=1, initial_wait=30, backoff=1, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded", debug=True)
     def get_game_info(self, game_id: TGameID) -> tp.Optional[SteamStoreApp]:
+        game_id = str(game_id)
         if game_id in self._cache:
             return self._cache[game_id]
         try:
@@ -106,51 +107,57 @@ class SteamGamesLibrary(GamesLibrary):
 
     def _cache_game(self, game_info: GameInfo):
         g = load_from_file(self.CACHE_GAME_FILE)
-        g[game_info.id] = game_info.to_dict()
+        g[str(game_info.id)] = game_info.to_dict()
         dump_to_file(g, self.CACHE_GAME_FILE)
 
-    def _load_cached_games(self):
+    def _load_cached_games(self, skip_free_games: bool=False):
         g = load_from_file(self.CACHE_GAME_FILE)
         for id_, game_dict in g.items():
-            self._games[id_] = GameInfo(**game_dict)
+            game_info = GameInfo(**game_dict)
+            if skip_free_games and game_info.free:
+                continue
+            self._games[id_] = game_info
 
-    def _fetch_library_games(self, skip_non_steam: bool = False, no_cache: bool = False, force: bool = False):
+    def _fetch_library_games(self, skip_non_steam: bool = False, skip_free_games: bool = False, no_cache: bool = False, force: bool = False):
         if force or not self._games:
             if not no_cache:
-                self._load_cached_games()
+                self._load_cached_games(skip_free_games=skip_free_games)
             try:
                 number_of_games = len(self.user.games)
                 for i, g in enumerate(self.user.games):
-                    if g.id in self._games:
+                    game_id = str(g.id)
+                    if game_id in self._games:
                         continue
                     echo.c(" " * 100 + f"\rFetching [{i}/{number_of_games}]: {g.name}", end="\r")
                     try:
-                        steam_game = self.store.get_game_info(g.id)
+                        steam_game = self.store.get_game_info(game_id)
                         if steam_game is None:
-                            echo.m(f"Game {g.name} id:{g.id} not fetched from Steam store, skip it!")
-                            self._store_skipped.append(g.id)
+                            echo.m(f"Game {g.name} id:{game_id} not fetched from Steam store, skip it!")
+                            self._store_skipped.append(game_id)
                     except SteamApiNotFoundError:
                         if skip_non_steam:
-                            echo.m(f"Game {g.name} id:{g.id} not found in Steam store, skip it")
+                            echo.m(f"Game {g.name} id:{game_id} not found in Steam store, skip it")
                             continue
-                        echo.r(f"Game {g.name} id:{g.id} not found in Steam store, fetching details from library")
+                        echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
                         steam_game = None
 
-                    logo_uri = steam_game.header_image if steam_game is not None and steam_game.header_image else self._image_link(g.id, g.img_logo_url)
+                    logo_uri = steam_game.header_image if steam_game is not None and steam_game.header_image else self._image_link(game_id, g.img_logo_url)
                     game_info = GameInfo(
-                        id=g.id,
+                        id=game_id,
                         name=g.name,
                         platforms=[PLATFORM],
                         release_date=steam_game.release_date if steam_game is not None else None,
                         playtime=self._playtime_format(g.playtime_forever),
                         logo_uri=logo_uri,
-                        bg_uri=self._get_bg_image(g.id),
-                        icon_uri=self._image_link(g.id, g.img_icon_url),
+                        bg_uri=self._get_bg_image(game_id),
+                        icon_uri=self._image_link(game_id, g.img_icon_url),
                         free=steam_game.is_free if steam_game is not None else None,
                     )
                     if steam_game is not None:
                         self._cache_game(game_info)
-                    self._games[g.id] = game_info
+                    if skip_free_games and game_info.free:
+                        continue
+                    self._games[game_id] = game_info
             except Exception as e:
                 raise SteamApiError(error=e)
 
