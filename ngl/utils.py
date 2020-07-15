@@ -111,7 +111,7 @@ def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, ra
                             raise
                         return None
                     _tries -= 1
-                    if _tries < 1:
+                    if _tries == 1:
                         if raise_on_error:
                             raise
                         return None
@@ -123,8 +123,10 @@ def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, ra
                             f"Exception: {e}\n"
                         ) if debug_msg is None else color.m(debug_msg)
                         echo.m("\n" + msg)
-                    for s in range(_delay, 1, -1):
-                        echo.m(" "*20 + f"\rWait for {s} seconds!", end="\r")
-                        time.sleep(1)
+                        for s in range(_delay, 1, -1):
+                            echo.m(" "*20 + f"\rWait for {s} seconds!", end="\r")
+                            time.sleep(1)
+                    else:
+                        time.sleep(_delay)
         return wrapper
     return decorator

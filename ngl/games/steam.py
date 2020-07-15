@@ -25,7 +25,7 @@ class SteamStoreApi:
         self.session = requests.Session()
         self._cache = {}
 
-    @retry(SteamStoreApiError, retry_num=1, initial_wait=30, backoff=1, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded", debug=True)
+    @retry(SteamStoreApiError, retry_num=2, initial_wait=30, backoff=1, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded", debug=True)
     def get_game_info(self, game_id: TGameID) -> tp.Optional[SteamStoreApp]:
         game_id = str(game_id)
         if game_id in self._cache:
@@ -118,7 +118,7 @@ class SteamGamesLibrary(GamesLibrary):
                 continue
             self._games[id_] = game_info
 
-    def _fetch_library_games(self, skip_non_steam: bool = False, skip_free_games: bool = False, no_cache: bool = False, force: bool = False):
+    def _fetch_library_games(self, skip_non_steam: bool = False, skip_free_games: bool = False, library_only: bool = False, no_cache: bool = False, force: bool = False):
         if force or not self._games:
             if not no_cache:
                 self._load_cached_games(skip_free_games=skip_free_games)
@@ -130,8 +130,8 @@ class SteamGamesLibrary(GamesLibrary):
                         continue
                     echo.c(" " * 100 + f"\rFetching [{i}/{number_of_games}]: {g.name}", end="\r")
                     try:
-                        steam_game = self.store.get_game_info(game_id)
-                        if steam_game is None:
+                        steam_game = self.store.get_game_info(game_id) if not library_only else None
+                        if steam_game is None and not library_only:
                             echo.m(f"Game {g.name} id:{game_id} not fetched from Steam store, skip it!")
                             self._store_skipped.append(game_id)
                     except SteamApiNotFoundError:

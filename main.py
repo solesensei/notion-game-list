@@ -7,6 +7,7 @@ from ngl.errors import ServiceError
 from ngl.games.steam import SteamGamesLibrary
 from ngl.utils import echo
 
+
 # ----------- Variables -----------
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")  # Notion cookies 'token_v2'
 STEAM_TOKEN = os.getenv("STEAM_TOKEN")    # https://steamcommunity.com/dev/apikey
@@ -16,9 +17,10 @@ STEAM_USER = os.getenv("STEAM_USER")      # http://steamcommunity.com/id/{STEAM_
 parser = argparse.ArgumentParser()
 parser.add_argument("--steam-user", help="Steam user id. http://steamcommunity.com/id/{STEAM_USER}")
 parser.add_argument("--store-bg-cover", help="Use steam store background as a game cover", action="store_true")
-parser.add_argument("--skip-non-steam", help="Not import games that are no longer on Steam store", action="store_true")
-parser.add_argument("--skip-free-steam", help="Not import free2play games", action="store_true")
-parser.add_argument("--steam-no-cache", help="Don't use cached fetched games", action="store_true")
+parser.add_argument("--skip-non-steam", help="Do not import games that are no longer on Steam store", action="store_true")
+parser.add_argument("--use-only-library", help="Do not use steam store to fetch game info, fetch everything from library", action="store_true")
+parser.add_argument("--skip-free-steam", help="Do not import free2play games", action="store_true")
+parser.add_argument("--steam-no-cache", help="Do not use cached fetched games", action="store_true")
 args = parser.parse_args()
 
 STEAM_USER = args.steam_user or STEAM_USER
@@ -32,11 +34,20 @@ try:
     echo.g("Logged into Steam!")
 
     echo.y("Getting Steam library games...")
-    game_list = sorted([steam.get_game_info(id_) for id_ in steam.get_games_list(skip_non_steam=args.skip_non_steam, skip_free_games=args.skip_free_steam, no_cache=args.steam_no_cache)], key=lambda x: x.name)
+    game_list = sorted(
+        [
+            steam.get_game_info(id_) for id_ in steam.get_games_list(
+                skip_non_steam=args.skip_non_steam,
+                skip_free_games=args.skip_free_steam,
+                library_only=args.use_only_library,
+                no_cache=args.steam_no_cache,
+            )
+        ], key=lambda x: x.name,
+    )
     if not game_list:
         raise ServiceError(msg="no steam games found")
 
-    echo.m(" "*100 + f"\rGot {len(game_list)} games!")
+    echo.m(" " * 100 + f"\rGot {len(game_list)} games!")
 
     echo.y("Creating Notion template page...")
     game_page = ngl.create_game_page()
