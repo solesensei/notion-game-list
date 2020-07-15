@@ -86,22 +86,23 @@ class NotionGameList:
     def _add_row(self, collection: Collection, **row_data) -> CollectionRowBlock:
         return collection.add_row(**row_data)
 
-    def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock) -> bool:
+    def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock, use_bg_as_cover: bool = False) -> bool:
         row_data = {"title": game.name, "platforms": game.platforms, "release_date": game.release_date, "notes": f"Playtime: {game.playtime}"}
         row = self._add_row(game_page.collection, **row_data)
         row.icon = game.icon_uri
         with self.client.as_atomic_transaction():
             # Game cover image
+            cover_img_uri = game.bg_uri if use_bg_as_cover else game.logo_uri
             self.client.submit_transaction(
-                build_operation(row.id, path=["format", "page_cover"], command="set", args=game.logo_uri, table="block")
+                build_operation(row.id, path=["format", "page_cover"], command="set", args=cover_img_uri, table="block")
             )
         return True
 
-    def import_game_list(self, game_list: tp.List[GameInfo], game_page: CollectionViewPageBlock) -> tp.List[GameInfo]:
+    def import_game_list(self, game_list: tp.List[GameInfo], game_page: CollectionViewPageBlock, **kwargs) -> tp.List[GameInfo]:
         errors = []
         for i, game in enumerate(game_list):
             echo.c(f"Status: {i}/{len(game_list)}", end="\r")
-            if not self.add_game(game, game_page):
+            if not self.add_game(game, game_page, **kwargs):
                 errors.append(game)
         return errors
 

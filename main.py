@@ -40,7 +40,7 @@ try:
     game_page = ngl.create_game_page()
     echo.g("Created!")
     echo.y("Importing steam library games to Notion...")
-    errors = ngl.import_game_list(game_list, game_page)
+    errors = ngl.import_game_list(game_list, game_page, use_bg_as_cover=args.store_bg_cover)
     imported = len(game_list) - len(errors)
 
     if imported == 0:
