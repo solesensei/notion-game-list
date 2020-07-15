@@ -5,8 +5,9 @@ class ServiceError(Exception):
     """ Common exception """
     code = 420
 
-    def __init__(self, msg=None, error=None):
-        self.msg = str(error) if msg is None and error else msg
+    def __init__(self, msg=None, error=None, code=420):
+        self.code = code
+        self.msg = getattr(error, "msg", str(error)) if msg is None and error else msg
         self.error = self.__class__.__name__ if error is None else error.__class__.__name__
         super().__init__(self.msg)
 
@@ -28,6 +29,10 @@ class ApiError(ServiceError):
 
 class SteamApiError(ApiError):
     code = 501
+
+
+class SteamStoreApiError(SteamApiError):
+    code = 481
 
 
 class SteamApiNotFoundError(SteamApiError):
