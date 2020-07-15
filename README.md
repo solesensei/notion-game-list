@@ -1,4 +1,4 @@
-# Notion Game List ![](https://img.shields.io/badge/version-0.0.3-blue)
+# Notion Game List ![](https://img.shields.io/badge/version-0.0.3-blue) ![](https://travis-ci.org/solesensei/notion-game-list.svg?branch=master)
 
 All your games inside [Notion](https://notion.so).
 
@@ -38,6 +38,8 @@ For notion i used [notion-py client](https://github.com/jamalex/notion-py) writt
 - Pass `token_v2` to system environment variable `NOTION_TOKEN` (optional)
 
 ## Usage
+
+Check [releases](https://github.com/solesensei/notion-game-list/releases/latest) and get binary tool for os you run, or you can use pure python.
 
 ```bash
 python main.py -h  # help
