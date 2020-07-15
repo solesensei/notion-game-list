@@ -1,0 +1,31 @@
+os: windows
+language: shell
+
+env:
+  global:
+    - PY37PATH=/c/Python37:/c/Python37/Scripts
+    - PATH=$PY37PATH:$PATH
+
+before_install:
+  - choco install python --version 3.7.7
+  - python --version
+
+install:
+  - pip install pyinstaller -U
+  - pip install -r requirements.txt -U
+
+script:
+  - pyinstaller --onefile main.py
+  - sleep 1  # Allow pyinstaller to finish writing to stdout
+  - ls -l dist
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $GH_TOKEN
+  file_glob: true
+  draft: true
+  file:
+    - "dist/*.exe"
+  on:
+    tags: true
