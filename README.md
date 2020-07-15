@@ -53,9 +53,12 @@ python main.py --steam-no-cache  # do not use game_info_cache.json, you can also
 
 ![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)
 
+_feel free to contribute and create issues_
+
 ## Plans
 
 - connect to existing page
+- update existing page values, do not recreate databases
 - add options for setting status
 - add options for importing specific games
 - options for disabling/enabling icons
