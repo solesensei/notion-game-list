@@ -39,6 +39,8 @@ For notion i used [notion-py client](https://github.com/jamalex/notion-py) writt
 
 ## Usage
 
+Check [releases](https://github.com/solesensei/notion-game-list/releases/latest) and get binary tool for os you run, or you can use pure python.
+
 ```bash
 python main.py -h  # help
 
