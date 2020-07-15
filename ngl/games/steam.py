@@ -25,21 +25,21 @@ class SteamStoreApi:
         self.session = requests.Session()
         self._cache = {}
 
-    @retry(SteamStoreApiError, backoff=1.5, debug=True)
-    def get_game_info(self, app_id: int) -> SteamStoreApp:
-        if app_id in self._cache:
-            return self._cache[app_id]
+    @retry(SteamStoreApiError, backoff=2, raise_on_error=False, debug=True)
+    def get_game_info(self, game_id: TGameID) -> tp.Optional[SteamStoreApp]:
+        if game_id in self._cache:
+            return self._cache[game_id]
         try:
-            r = self.session.get(self.API_HOST.format(app_id), timeout=3)
+            r = self.session.get(self.API_HOST.format(game_id), timeout=3)
             if not r.ok:
                 raise SteamStoreApiError(f"can't get {r.url}, code: {r.status_code}, text: {r.text}")
 
-            response_body = r.json()[str(app_id)]
+            response_body = r.json()[str(game_id)]
             if not response_body["success"]:
-                raise SteamApiNotFoundError(f"SteamStoreApi App {app_id} unsuccessfull request")
+                raise SteamApiNotFoundError(f"Game {game_id} unsuccessfull request")
 
-            self._cache[app_id] = SteamStoreApp(**response_body["data"])
-            return self._cache[app_id]
+            self._cache[game_id] = SteamStoreApp(**response_body["data"])
+            return self._cache[game_id]
         except (SteamApiNotFoundError, SteamStoreApiError):
             raise
         except Exception as e:
@@ -54,6 +54,7 @@ class SteamGamesLibrary(GamesLibrary):
         self.store = SteamStoreApi()
         self.user = self._get_user(user_id)
         self._games = {}
+        self._store_skipped = []
 
     def _get_api(self, api_key: TSteamApiKey):
         try:
@@ -81,15 +82,15 @@ class SteamGamesLibrary(GamesLibrary):
             user_id = re.sub(r"^https?:\/\/steamcommunity\.com\/id\/", "", user_id)
         return cls(api_key=api_key, user_id=user_id)
 
-    def _image_link(self, app_id: int, img_hash: str):
-        return self.IMAGE_HOST + f"{app_id}/{img_hash}.jpg"
+    def _image_link(self, game_id: TGameID, img_hash: str):
+        return self.IMAGE_HOST + f"{game_id}/{img_hash}.jpg"
 
-    def _get_bg_image(self, app_id: int) -> tp.Optional[str]:
-        _bg_img = "https://steamcdn-a.akamaihd.net/steam/apps/{app_id}/{bg}.jpg"
-        bg_link = _bg_img.format(app_id=app_id, bg="page.bg")
+    def _get_bg_image(self, game_id: TGameID) -> tp.Optional[str]:
+        _bg_img = "https://steamcdn-a.akamaihd.net/steam/apps/{game_id}/{bg}.jpg"
+        bg_link = _bg_img.format(game_id=game_id, bg="page.bg")
         if is_valid_link(bg_link):
             return bg_link
-        bg_link = _bg_img.format(app_id=app_id, bg="page_bg_generated")
+        bg_link = _bg_img.format(game_id=game_id, bg="page_bg_generated")
         if is_valid_link(bg_link):
             return bg_link
         return None
@@ -110,6 +111,9 @@ class SteamGamesLibrary(GamesLibrary):
                     echo.c(" " * 100 + f"\rFetching [{i}/{number_of_games}]: {g.name}", end="\r")
                     try:
                         steam_game = self.store.get_game_info(g.id)
+                        if steam_game is None:
+                            echo.m(f"Game {g.name} id:{g.id} not fetched from Steam store, skip it!")
+                            self._store_skipped.append(g.id)
                     except SteamApiNotFoundError:
                         if skip_non_steam:
                             echo.m(f"Game {g.name} id:{g.id} not found in Steam store, skip it")

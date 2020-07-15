@@ -83,7 +83,7 @@ echo = Echo()
 color = ColorText()
 
 
-def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, debug=False):
+def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, raise_on_error=True, debug=False):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -93,17 +93,21 @@ def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, de
                     return f(*args, **kwargs)
                 except exceptions as e:
                     if on_code is not None and on_code != e.code:
-                        raise
+                        if raise_on_error:
+                            raise
+                        return None
                     _tries -= 1
                     if _tries == 1:
-                        raise
+                        if raise_on_error:
+                            raise
+                        return None
                     _delay *= backoff
                     if debug:
-                        print_args = args if args else "no args"
+                        print_args = args if args else ""
                         msg = str(
-                            f"Function: {f.__name__}\n"
-                            f"Exception: {e.msg}\n"
-                            f"Retrying in {_delay} seconds!, args: {print_args}, kwargs: {kwargs}\n",
+                            f"\nFunction: {f.__name__} args: {print_args}, kwargs: {kwargs}\n"
+                            f"Exception: {e}\n"
+                            f"Retrying in {_delay} seconds!\n",
                         )
                         echo.m(msg, end="")
                     time.sleep(_delay)
