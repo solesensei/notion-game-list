@@ -1,42 +1,44 @@
 import sys
+import time
+from functools import wraps
 
-from termcolor import colored, cprint
-from functools import lru_cache
+from termcolor import colored
 
-if sys.platform == 'win32':
+
+if sys.platform == "win32":
     import colorama
     colorama.init()
 
 
-class ColorText(object):
+class ColorText:
 
     @staticmethod
     def r(msg):
         """ Returns red message """
-        return colored(msg, 'red')
+        return colored(msg, "red")
 
     @staticmethod
     def g(msg):
         """ Returns green message """
-        return colored(msg, 'green')
+        return colored(msg, "green")
 
     @staticmethod
     def y(msg):
         """ Returns yellow message """
-        return colored(msg, 'yellow')
+        return colored(msg, "yellow")
 
     @staticmethod
     def c(msg):
         """ Returns cyan message """
-        return colored(msg, 'cyan')
+        return colored(msg, "cyan")
 
     @staticmethod
     def m(msg):
         """ Returns magenta message """
-        return colored(msg, 'magenta')
+        return colored(msg, "magenta")
 
 
-class Echo(object):
+class Echo:
 
     @staticmethod
     def _colored(msg, color):
@@ -50,27 +52,27 @@ class Echo(object):
     @staticmethod
     def r(msg, **kwargs):
         """ Print red color message """
-        Echo._color_print(msg, 'red', **kwargs)
+        Echo._color_print(msg, "red", **kwargs)
 
     @staticmethod
     def g(msg, **kwargs):
         """ Print green color message """
-        Echo._color_print(msg, 'green', **kwargs)
+        Echo._color_print(msg, "green", **kwargs)
 
     @staticmethod
     def y(msg, **kwargs):
         """ Print yellow color message """
-        Echo._color_print(msg, 'yellow', **kwargs)
+        Echo._color_print(msg, "yellow", **kwargs)
 
     @staticmethod
     def c(msg, **kwargs):
         """ Print cyan color message """
-        Echo._color_print(msg, 'cyan', **kwargs)
+        Echo._color_print(msg, "cyan", **kwargs)
 
     @staticmethod
     def m(msg, **kwargs):
         """ Print magenta color message """
-        Echo._color_print(msg, 'magenta', **kwargs)
+        Echo._color_print(msg, "magenta", **kwargs)
 
     def __call__(self, *args, **kwargs):
         print(*args, **kwargs)
@@ -79,3 +81,31 @@ class Echo(object):
 
 echo = Echo()
 color = ColorText()
+
+
+def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, debug=False):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            _tries, _delay = retry_num + 1, initial_wait
+            while _tries > 1:
+                try:
+                    return f(*args, **kwargs)
+                except exceptions as e:
+                    if on_code is not None and on_code != e.code:
+                        raise
+                    _tries -= 1
+                    if _tries == 1:
+                        raise
+                    _delay *= backoff
+                    if debug:
+                        print_args = args if args else "no args"
+                        msg = str(
+                            f"Function: {f.__name__}\n"
+                            f"Exception: {e.msg}\n"
+                            f"Retrying in {_delay} seconds!, args: {print_args}, kwargs: {kwargs}\n",
+                        )
+                        echo.m(msg, end="")
+                    time.sleep(_delay)
+        return wrapper
+    return decorator
