@@ -7,7 +7,7 @@ from ngl.api.steam import steamapi
 from ngl.core import is_valid_link
 from ngl.errors import SteamApiError, SteamApiNotFoundError, SteamStoreApiError
 from ngl.models.steam import SteamStoreApp
-from ngl.utils import color, echo, retry
+from ngl.utils import color, echo, retry, dump_to_file, load_from_file
 
 from .base import GameInfo, GamesLibrary, TGameID
 
@@ -25,7 +25,7 @@ class SteamStoreApi:
         self.session = requests.Session()
         self._cache = {}
 
-    @retry(SteamStoreApiError, backoff=2, raise_on_error=False, debug=True)
+    @retry(SteamStoreApiError, retry_num=1, initial_wait=30, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded, wait for 30 seconds", debug=True)
     def get_game_info(self, game_id: TGameID) -> tp.Optional[SteamStoreApp]:
         if game_id in self._cache:
             return self._cache[game_id]
@@ -48,6 +48,7 @@ class SteamStoreApi:
 
 class SteamGamesLibrary(GamesLibrary):
     IMAGE_HOST = "http://media.steampowered.com/steamcommunity/public/images/apps/"
+    CACHE_GAME_FILE = "game_info_cache.json"
 
     def __init__(self, api_key: TSteamApiKey, user_id: TSteamUserID):
         self.api = self._get_api(api_key)
@@ -103,11 +104,25 @@ class SteamGamesLibrary(GamesLibrary):
             return f"{playtime_in_minutes} minutes"
         return f"{playtime_in_minutes // 60} hours"
 
-    def _fetch_library_games(self, skip_non_steam: bool = False):
-        if not self._games:
+    def _cache_game(self, game_info: GameInfo):
+        g = load_from_file(self.CACHE_GAME_FILE)
+        g[game_info.id] = game_info.to_dict()
+        dump_to_file(g, self.CACHE_GAME_FILE)
+
+    def _load_cached_games(self):
+        g = load_from_file(self.CACHE_GAME_FILE)
+        for id_, game_dict in g.items():
+            self._games[id_] = GameInfo(**game_dict)
+
+    def _fetch_library_games(self, skip_non_steam: bool = False, no_cache: bool = False, force: bool = False):
+        if force or not self._games:
+            if not no_cache:
+                self._load_cached_games()
             try:
                 number_of_games = len(self.user.games)
                 for i, g in enumerate(self.user.games):
+                    if g.id in self._games:
+                        continue
                     echo.c(" " * 100 + f"\rFetching [{i}/{number_of_games}]: {g.name}", end="\r")
                     try:
                         steam_game = self.store.get_game_info(g.id)
@@ -121,18 +136,21 @@ class SteamGamesLibrary(GamesLibrary):
                         echo.r(f"Game {g.name} id:{g.id} not found in Steam store, fetching details from library")
                         steam_game = None
 
-                    game_logo_uri = steam_game.header_image if steam_game is not None and steam_game.header_image else self._image_link(g.id, g.img_logo_url)
-                    self._games[g.id] = GameInfo(
-                        game_id=g.id,
-                        game_name=g.name,
-                        game_platforms=[PLATFORM],
-                        game_release_date=steam_game.release_date if steam_game is not None else None,
-                        game_playtime=self._playtime_format(g.playtime_forever),
-                        game_logo_uri=game_logo_uri,
-                        game_bg_uri=self._get_bg_image(g.id),
-                        game_icon_uri=self._image_link(g.id, g.img_icon_url),
-                        game_free=steam_game.is_free if steam_game is not None else None,
+                    logo_uri = steam_game.header_image if steam_game is not None and steam_game.header_image else self._image_link(g.id, g.img_logo_url)
+                    game_info = GameInfo(
+                        id=g.id,
+                        name=g.name,
+                        platforms=[PLATFORM],
+                        release_date=steam_game.release_date if steam_game is not None else None,
+                        playtime=self._playtime_format(g.playtime_forever),
+                        logo_uri=logo_uri,
+                        bg_uri=self._get_bg_image(g.id),
+                        icon_uri=self._image_link(g.id, g.img_icon_url),
+                        free=steam_game.is_free if steam_game is not None else None,
                     )
+                    if steam_game is not None:
+                        self._cache_game(game_info)
+                    self._games[g.id] = game_info
             except Exception as e:
                 raise SteamApiError(error=e)
 

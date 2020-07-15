@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--steam-user", help="Steam user id. http://steamcommunity.com/id/{STEAM_USER}")
 parser.add_argument("--store-bg-cover", help="Use steam store background as a game cover", action="store_true")
 parser.add_argument("--skip-non-steam", help="Skip games that are no longer on Steam store", action="store_true")
+parser.add_argument("--steam-no-cache", help="Don't use cached fetched games", action="store_true")
 args = parser.parse_args()
 
 STEAM_USER = args.steam_user or STEAM_USER
@@ -30,7 +31,7 @@ try:
     echo.g("Logged into Steam!")
 
     echo.y("Getting Steam library games...")
-    game_list = sorted([steam.get_game_info(id_) for id_ in steam.get_games_list(skip_non_steam=args.skip_non_steam)], key=lambda x: x.name)
+    game_list = sorted([steam.get_game_info(id_) for id_ in steam.get_games_list(skip_non_steam=args.skip_non_steam, no_cache=args.steam_no_cache)], key=lambda x: x.name)
     if not game_list:
         raise ServiceError(msg="no steam games found")
 

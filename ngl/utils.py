@@ -1,3 +1,5 @@
+import json
+import os
 import sys
 import time
 from functools import wraps
@@ -83,7 +85,19 @@ echo = Echo()
 color = ColorText()
 
 
-def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, raise_on_error=True, debug=False):
+def load_from_file(filename):
+    if not os.path.exists(filename):
+        return {}
+    with open(filename, 'r') as f:
+        return json.load(f)
+
+
+def dump_to_file(d, filename):
+    with open(filename, 'w') as f:
+        json.dump(d, f)
+
+
+def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, raise_on_error=True, debug_msg=None, debug=False):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -97,7 +111,7 @@ def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, ra
                             raise
                         return None
                     _tries -= 1
-                    if _tries == 1:
+                    if _tries < 1:
                         if raise_on_error:
                             raise
                         return None
@@ -107,9 +121,9 @@ def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, ra
                         msg = str(
                             f"\nFunction: {f.__name__} args: {print_args}, kwargs: {kwargs}\n"
                             f"Exception: {e}\n"
-                            f"Retrying in {_delay} seconds!\n",
-                        )
-                        echo.m(msg, end="")
+                            f"Retrying in {_delay} seconds!",
+                        ) if debug_msg is None else color.m(debug_msg)
+                        echo.m(msg)
                     time.sleep(_delay)
         return wrapper
     return decorator

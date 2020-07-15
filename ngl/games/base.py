@@ -9,26 +9,28 @@ class GameInfo:
 
     def __init__(
         self,
-        game_id: TGameID,
-        game_name: str,
-        game_platforms: tp.List[str],
-        game_release_date: tp.Optional[str] = None,
-        game_playtime: tp.Optional[str] = None,
-        game_logo_uri: tp.Optional[str] = None,
-        game_bg_uri: tp.Optional[str] = None,
-        game_icon_uri: tp.Optional[str] = None,
-        game_free: bool = False
+        id: TGameID,
+        name: str,
+        platforms: tp.List[str],
+        release_date: tp.Optional[str] = None,
+        playtime: tp.Optional[str] = None,
+        logo_uri: tp.Optional[str] = None,
+        bg_uri: tp.Optional[str] = None,
+        icon_uri: tp.Optional[str] = None,
+        free: bool = False
     ):
-        self.id = game_id
-        self.name = game_name
-        self.platforms = game_platforms
-        self.release_date = game_release_date
-        self.playtime = game_playtime
-        self.logo_uri = game_logo_uri
-        self.bg_uri = game_bg_uri
-        self.icon_uri = game_icon_uri
-        self.free = game_free
+        self.id = id
+        self.name = name
+        self.platforms = platforms
+        self.release_date = release_date
+        self.playtime = playtime
+        self.logo_uri = logo_uri
+        self.bg_uri = bg_uri
+        self.icon_uri = icon_uri
+        self.free = free
 
+    def to_dict(self):
+        return self.__dict__
 
 class GamesLibrary(metaclass=ABCMeta):
 
