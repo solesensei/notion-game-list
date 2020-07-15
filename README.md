@@ -40,7 +40,7 @@ For notion i used [notion-py client](https://github.com/jamalex/notion-py) writt
 ## Usage
 
 ```bash
-python main.py
+python main.py -h
 ```
 
 ![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)
@@ -50,7 +50,7 @@ python main.py
 - connect to existing page
 - add options for setting status
 - add options for importing specific games
-- load game covers with better resolution (game DB, steamstore?)
+- ~load game covers with better resolution (game DB, steamstore?)~ done in v0.0.2
 - options for disabling/enabling icons
 - parse recent games
 - login to notion with password
