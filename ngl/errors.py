@@ -12,7 +12,7 @@ class ServiceError(Exception):
         super().__init__(self.msg)
 
     def __str__(self):
-        msg = color.r(self.error)
+        msg = " "*100 + "\r" + color.r(self.error)
 
         if self.msg:
             msg += color.r(f": {self.msg}")

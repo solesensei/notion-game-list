@@ -22,11 +22,11 @@ class GameInfo:
         self.id = id
         self.name = name
         self.platforms = platforms
-        self.release_date = release_date
-        self.playtime = playtime
-        self.logo_uri = logo_uri
-        self.bg_uri = bg_uri
-        self.icon_uri = icon_uri
+        self.release_date = release_date if release_date else None
+        self.playtime = playtime if playtime else None
+        self.logo_uri = logo_uri if logo_uri else None
+        self.bg_uri = bg_uri if bg_uri else None
+        self.icon_uri = icon_uri if icon_uri else None
         self.free = free
 
     def to_dict(self):

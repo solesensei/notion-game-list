@@ -1,7 +1,9 @@
 import typing as tp
 
+from ngl.models.base import BaseModel
 
-class SteamStoreAppPriceOverview:
+
+class SteamStoreAppPriceOverview(BaseModel):
 
     def __init__(
         self,
@@ -20,7 +22,7 @@ class SteamStoreAppPriceOverview:
         self.final_formatted = final_formatted
 
 
-class SteamStoreAppPackageGroupSub:
+class SteamStoreAppPackageGroupSub(BaseModel):
 
     def __init__(
         self,
@@ -43,7 +45,7 @@ class SteamStoreAppPackageGroupSub:
         self.price_in_cents_with_discount = price_in_cents_with_discount
 
 
-class SteamStoreAppPackageGroup:
+class SteamStoreAppPackageGroup(BaseModel):
 
     def __init__(
         self,
@@ -65,22 +67,29 @@ class SteamStoreAppPackageGroup:
         self.is_recurring_subscription = is_recurring_subscription
         self.subs = subs
 
+    @classmethod
+    def load(cls, d: tp.Optional[dict]):
+        if d is None:
+            return None
+        d["subs"] = [SteamStoreAppPackageGroupSub.load(t) for t in d["subs"]]
+        return cls(**d)
 
-class SteamStoreAppCategory:
+
+class SteamStoreAppCategory(BaseModel):
 
     def __init__(self, id: int, description: str):
         self.id = id
         self.description = description
 
 
-class SteamStoreAppGenre:
+class SteamStoreAppGenre(BaseModel):
 
     def __init__(self, id: str, description: str):
         self.id = id
         self.description = description
 
 
-class SteamStoreAppScreenshot:
+class SteamStoreAppScreenshot(BaseModel):
 
     def __init__(self, id: int, path_thumbnail: str, path_full: str):
         self.id = id
@@ -88,7 +97,7 @@ class SteamStoreAppScreenshot:
         self.path_full = path_full
 
 
-class SteamStoreAppMovie:
+class SteamStoreAppMovie(BaseModel):
 
     def __init__(
         self,
@@ -107,49 +116,56 @@ class SteamStoreAppMovie:
         self.highlight = highlight
 
 
-class SteamStoreAppMetacriticScore:
+class SteamStoreAppMetacriticScore(BaseModel):
 
     def __init__(self, score: int, url: str):
         self.score = score
         self.url = url
 
 
-class SteamStoreAppAchievementHighlighted:
+class SteamStoreAppAchievementHighlighted(BaseModel):
 
     def __init__(self, name: str, path: str):
         self.name = name
         self.path = path
 
 
-class SteamStoreAppAchievements:
+class SteamStoreAppAchievements(BaseModel):
 
     def __init__(self, total: int, highlighted: tp.List[SteamStoreAppAchievementHighlighted]):
         self.total = total
         self.highlighted = highlighted
 
+    @classmethod
+    def load(cls, d: tp.Optional[dict]):
+        if d is None:
+            return None
+        d["highlighted"] = [SteamStoreAppAchievementHighlighted.load(t) for t in d.get("highlighted", [])]
+        return cls(**d)
 
-class SteamStoreAppReleaseDate:
+
+class SteamStoreAppReleaseDate(BaseModel):
 
     def __init__(self, coming_soon: bool, date: str):
         self.coming_soon = coming_soon
-        self.date = date
+        self.date = date if date else None
 
 
-class SteamStoreAppSupportInfo:
+class SteamStoreAppSupportInfo(BaseModel):
 
     def __init__(self, url: str, email: str):
         self.url = url
         self.email = email
 
 
-class SteamStoreAppContentDescriptors:
+class SteamStoreAppContentDescriptors(BaseModel):
 
     def __init__(self, ids: tp.List[int], notes: str):
         self.ids = ids
         self.notes = notes
 
 
-class SteamStoreApp:
+class SteamStoreApp(BaseModel):
 
     def __init__(
         self,
@@ -225,3 +241,20 @@ class SteamStoreApp:
         self.pc_requirements = pc_requirements
         self.mac_requirements = mac_requirements
         self.linux_requirements = linux_requirements
+
+    @classmethod
+    def load(cls, d: tp.Optional[dict]):
+        if d is None:
+            return None
+        d["release_date"] = SteamStoreAppReleaseDate.load(d["release_date"])
+        d["support_info"] = SteamStoreAppSupportInfo.load(d["support_info"])
+        d["package_groups"] = [SteamStoreAppPackageGroup.load(t) for t in d["package_groups"]]
+        d["content_descriptors"] = SteamStoreAppContentDescriptors.load(d.get("content_descriptors"))
+        d["screenshots"] = [SteamStoreAppScreenshot.load(t) for t in d.get("screenshots", [])]
+        d["categories"] = [SteamStoreAppCategory.load(t) for t in d.get("categories", [])]
+        d["genres"] = [SteamStoreAppGenre.load(t) for t in d.get("genres", [])]
+        d["achievements"] = SteamStoreAppAchievements.load(d.get("achievements"))
+        d["metacritic"] = SteamStoreAppMetacriticScore.load(d.get("metacritic"))
+        d["movies"] = [SteamStoreAppMovie.load(t) for t in d.get("movies", [])]
+        d["price_overview"] = SteamStoreAppPriceOverview.load(d.get("price_overview"))
+        return cls(**d)

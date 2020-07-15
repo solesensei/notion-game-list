@@ -1,10 +1,12 @@
 import typing as tp
+from datetime import datetime
 
 from notion.block import CollectionViewPageBlock, DividerBlock, CalloutBlock
 from notion.client import NotionClient
 from notion.collection import Collection, CollectionRowBlock
 from notion.operations import build_operation
 
+from ngl.errors import ServiceError
 from ngl.games.base import GameInfo
 
 from .utils import echo, color
@@ -86,8 +88,17 @@ class NotionGameList:
     def _add_row(self, collection: Collection, **row_data) -> CollectionRowBlock:
         return collection.add_row(**row_data)
 
+    @staticmethod
+    def _parse_date(date_str: tp.Optional[str], format_="%d %b, %Y"):
+        if date_str is None:
+            return None
+        try:
+            return datetime.strptime(date_str, format_).date()
+        except ValueError as e:
+            raise ServiceError(error=e)
+
     def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock, use_bg_as_cover: bool = False) -> bool:
-        row_data = {"title": game.name, "platforms": game.platforms, "release_date": game.release_date, "notes": f"Playtime: {game.playtime}"}
+        row_data = {"title": game.name, "platforms": game.platforms, "release_date": self._parse_date(game.release_date), "notes": f"Playtime: {game.playtime}"}
         row = self._add_row(game_page.collection, **row_data)
         row.icon = game.icon_uri
         with self.client.as_atomic_transaction():

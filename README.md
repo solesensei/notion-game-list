@@ -1,4 +1,4 @@
-# Notion Game List ![](https://img.shields.io/badge/version-0.0.2-blue)
+# Notion Game List ![](https://img.shields.io/badge/version-0.0.3-blue)
 
 All your games inside [Notion](https://notion.so).
 
@@ -40,7 +40,15 @@ For notion i used [notion-py client](https://github.com/jamalex/notion-py) writt
 ## Usage
 
 ```bash
-python main.py -h
+python main.py -h  # help
+
+python main.py --steam-user solesensei  # run for steam user_id = solesensei
+
+python main.py --store-bg-cover --skip-non-steam  # use store steam background as cover and skip games that are no longer in store
+
+python main.py --skip-free-steam  # import all games except of free2play
+
+python main.py --steam-no-cache  # do not use game_info_cache.json, you can also remove the file
 ```
 
 ![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)
@@ -50,8 +58,9 @@ python main.py -h
 - connect to existing page
 - add options for setting status
 - add options for importing specific games
-- ~load game covers with better resolution (game DB, steamstore?)~ done in v0.0.2
 - options for disabling/enabling icons
 - parse recent games
 - login to notion with password
-- add release date
+- add proxy for unlimited requests to Steam Store Web Api (limit: 200 games per 5 minutes)
+- ~add release date~ done in v0.0.3
+- ~load game covers with better resolution (game DB, steamstore?)~ done in v0.0.2

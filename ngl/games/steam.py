@@ -25,7 +25,7 @@ class SteamStoreApi:
         self.session = requests.Session()
         self._cache = {}
 
-    @retry(SteamStoreApiError, retry_num=2, initial_wait=30, backoff=1, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded", debug=True)
+    @retry(SteamStoreApiError, retry_num=2, initial_wait=90, backoff=1, raise_on_error=False, debug_msg="Limit StoreSteamAPI requests exceeded", debug=True)
     def get_game_info(self, game_id: TGameID) -> tp.Optional[SteamStoreApp]:
         game_id = str(game_id)
         if game_id in self._cache:
@@ -39,7 +39,7 @@ class SteamStoreApi:
             if not response_body["success"]:
                 raise SteamApiNotFoundError(f"Game {game_id} unsuccessfull request")
 
-            self._cache[game_id] = SteamStoreApp(**response_body["data"])
+            self._cache[game_id] = SteamStoreApp.load(response_body["data"])
             return self._cache[game_id]
         except (SteamApiNotFoundError, SteamStoreApiError):
             raise
@@ -110,7 +110,7 @@ class SteamGamesLibrary(GamesLibrary):
         g[str(game_info.id)] = game_info.to_dict()
         dump_to_file(g, self.CACHE_GAME_FILE)
 
-    def _load_cached_games(self, skip_free_games: bool=False):
+    def _load_cached_games(self, skip_free_games: bool = False):
         g = load_from_file(self.CACHE_GAME_FILE)
         for id_, game_dict in g.items():
             game_info = GameInfo(**game_dict)
@@ -124,7 +124,7 @@ class SteamGamesLibrary(GamesLibrary):
                 self._load_cached_games(skip_free_games=skip_free_games)
             try:
                 number_of_games = len(self.user.games)
-                for i, g in enumerate(self.user.games):
+                for i, g in enumerate(sorted(self.user.games, key=lambda x: x.name)):
                     game_id = str(g.id)
                     if game_id in self._games:
                         continue
@@ -146,7 +146,7 @@ class SteamGamesLibrary(GamesLibrary):
                         id=game_id,
                         name=g.name,
                         platforms=[PLATFORM],
-                        release_date=steam_game.release_date if steam_game is not None else None,
+                        release_date=steam_game.release_date.date if steam_game is not None else None,
                         playtime=self._playtime_format(g.playtime_forever),
                         logo_uri=logo_uri,
                         bg_uri=self._get_bg_image(game_id),
