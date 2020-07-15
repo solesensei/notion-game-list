@@ -32,6 +32,6 @@ deploy:
   api_key: $GH_TOKEN
   file_glob: true
   file:
-    - "dist/*.exe"
+    - "dist/*"
   on:
     tags: true
