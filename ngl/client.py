@@ -106,7 +106,7 @@ class NotionGameList:
         row.icon = game.icon_uri
         with self.client.as_atomic_transaction():
             # Game cover image
-            cover_img_uri = game.bg_uri if use_bg_as_cover else game.logo_uri
+            cover_img_uri = game.bg_uri or game.logo_uri if use_bg_as_cover else game.logo_uri
             self.client.submit_transaction(
                 build_operation(row.id, path=["format", "page_cover"], command="set", args=cover_img_uri, table="block")
             )
