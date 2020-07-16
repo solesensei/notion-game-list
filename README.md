@@ -1,6 +1,6 @@
 # Notion Game List ![](https://img.shields.io/badge/version-0.0.3-blue) ![](https://travis-ci.org/solesensei/notion-game-list.svg?branch=master)
 
-All your games inside [Notion](https://notion.so).
+All your games inside [Notion](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84).
 
 ![notion-x-steam](https://user-images.githubusercontent.com/24857057/87418150-eb088280-c5d9-11ea-87b1-ab77979a1b25.png)
 
@@ -53,7 +53,7 @@ python main.py --skip-free-steam  # import all games except of free2play
 python main.py --steam-no-cache  # do not use game_info_cache.json, you can also remove the file
 ```
 
-![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)
+[![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84)
 
 _feel free to contribute and create issues_
 
