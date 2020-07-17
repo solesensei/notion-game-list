@@ -1,3 +1,6 @@
 [submodule "ngl/api/steam"]
 	path = ngl/api/steam
 	url = git@github.com:smiley/steamapi.git
+[submodule "ngl/api/psn"]
+	path = ngl/api/psn
+	url = git@github.com:mgp25/psn-api.git
