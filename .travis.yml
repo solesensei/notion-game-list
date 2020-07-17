@@ -25,6 +25,7 @@ script:
   - pyinstaller --console --hidden-import=pkg_resources.py2_warn --onefile main.py -n "main_$TRAVIS_OS_NAME"
   - sleep 1  # Allow pyinstaller to finish writing to stdout
   - ls -l dist
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then chmod u+x "dist/main_$TRAVIS_OS_NAME" ; fi
 
 deploy:
   provider: releases
