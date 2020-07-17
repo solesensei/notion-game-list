@@ -55,6 +55,8 @@ python main.py --steam-no-cache  # do not use game_info_cache.json, you can also
 
 [![notion-example](https://user-images.githubusercontent.com/24857057/87416955-21450280-c5d8-11ea-976e-3242bc61ec49.png)](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84)
 
+_[result here](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84)_
+
 _feel free to contribute and create issues_
 
 ## Plans
