@@ -6,9 +6,9 @@ from functools import wraps
 
 from termcolor import colored
 
-
 if sys.platform == "win32":
     import colorama
+    os.system('color')
     colorama.init()
 
 
@@ -124,7 +124,7 @@ def retry(exceptions, on_code=None, retry_num=3, initial_wait=0.5, backoff=2, ra
                         ) if debug_msg is None else color.m(debug_msg)
                         echo.m("\n" + msg)
                         for s in range(_delay, 1, -1):
-                            echo.m(" "*20 + f"\rWait for {s} seconds!", end="\r")
+                            echo.m(" " * 20 + f"\rWait for {s} seconds!", end="\r")
                             time.sleep(1)
                     else:
                         time.sleep(_delay)
