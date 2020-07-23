@@ -5,7 +5,7 @@ import sys
 from ngl.client import NotionGameList
 from ngl.errors import ServiceError
 from ngl.games.steam import SteamGamesLibrary
-from ngl.utils import echo
+from ngl.utils import echo, color, soft_exit
 
 
 # ----------- Variables -----------
@@ -14,18 +14,18 @@ STEAM_TOKEN = os.getenv("STEAM_TOKEN")    # https://steamcommunity.com/dev/apike
 STEAM_USER = os.getenv("STEAM_USER")      # http://steamcommunity.com/id/{STEAM_USER}
 # ---------------------------------
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--steam-user", help="Steam user id. http://steamcommunity.com/id/{STEAM_USER}")
-parser.add_argument("--store-bg-cover", help="Use steam store background as a game cover", action="store_true")
-parser.add_argument("--skip-non-steam", help="Do not import games that are no longer on Steam store", action="store_true")
-parser.add_argument("--use-only-library", help="Do not use steam store to fetch game info, fetch everything from library", action="store_true")
-parser.add_argument("--skip-free-steam", help="Do not import free2play games", action="store_true")
-parser.add_argument("--steam-no-cache", help="Do not use cached fetched games", action="store_true")
-args = parser.parse_args()
-
-STEAM_USER = args.steam_user or STEAM_USER
-
 try:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--steam-user", help="Steam user id. http://steamcommunity.com/id/{STEAM_USER}")
+    parser.add_argument("--store-bg-cover", help="Use steam store background as a game cover", action="store_true")
+    parser.add_argument("--skip-non-steam", help="Do not import games that are no longer on Steam store", action="store_true")
+    parser.add_argument("--use-only-library", help="Do not use steam store to fetch game info, fetch everything from library", action="store_true")
+    parser.add_argument("--skip-free-steam", help="Do not import free2play games", action="store_true")
+    parser.add_argument("--steam-no-cache", help="Do not use cached fetched games", action="store_true")
+    args = parser.parse_args()
+
+    STEAM_USER = args.steam_user or STEAM_USER
+
     echo.y("Logging into Notion...")
     ngl = NotionGameList.login(token_v2=NOTION_TOKEN)
     echo.g("Logged into Notion!")
@@ -67,6 +67,10 @@ try:
 
 except ServiceError as e:
     echo(e)
-    sys.exit(1)
+    soft_exit(1)
+except (Exception, KeyboardInterrupt) as e:
+    echo(f"\n{e.__class__.__name__}: {e}", file=sys.stderr)
+    soft_exit(1)
 
 echo.m("Completed!")
+soft_exit(0)
