@@ -85,6 +85,12 @@ echo = Echo()
 color = ColorText()
 
 
+def soft_exit(exit_code):
+    if sys.platform == "win32":
+        input(color.y("\nEnter any key to exit"))
+    sys.exit(exit_code)
+
+
 def load_from_file(filename):
     if not os.path.exists(filename):
         return {}
