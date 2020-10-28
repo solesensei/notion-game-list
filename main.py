@@ -12,6 +12,7 @@ from ngl.utils import echo, color, soft_exit
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")  # Notion cookies 'token_v2'
 STEAM_TOKEN = os.getenv("STEAM_TOKEN")    # https://steamcommunity.com/dev/apikey
 STEAM_USER = os.getenv("STEAM_USER")      # http://steamcommunity.com/id/{STEAM_USER}
+DEBUG = os.getenv("DEBUG", "0") == "1"
 # ---------------------------------
 
 try:
@@ -67,9 +68,13 @@ try:
 
 except ServiceError as e:
     echo(e)
+    if DEBUG:
+        raise e
     soft_exit(1)
 except (Exception, KeyboardInterrupt) as e:
     echo(f"\n{e.__class__.__name__}: {e}", file=sys.stderr)
+    if DEBUG:
+        raise e
     soft_exit(1)
 
 echo.m("Completed!")

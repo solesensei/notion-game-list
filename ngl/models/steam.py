@@ -118,7 +118,7 @@ class SteamStoreAppMovie(BaseModel):
 
 class SteamStoreAppMetacriticScore(BaseModel):
 
-    def __init__(self, score: int, url: str):
+    def __init__(self, score: int, url: tp.Optional[str] = None):
         self.score = score
         self.url = url
 
