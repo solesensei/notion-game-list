@@ -93,6 +93,7 @@ class NotionGameList:
         if not date_str:
             return None
         check_date_formats = (r"%d %b, %Y", r"%b %d, %Y", r"%b %Y")
+        e = None
         for fmt in check_date_formats:
             try:
                 return datetime.strptime(date_str, fmt).date()
