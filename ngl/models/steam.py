@@ -13,6 +13,7 @@ class SteamStoreAppPriceOverview(BaseModel):
         discount_percent: int,
         initial_formatted: str,
         final_formatted: str,
+        **kwargs
     ):
         self.currency = currency
         self.initial = initial
@@ -33,7 +34,8 @@ class SteamStoreAppPackageGroupSub(BaseModel):
         option_description: str,
         can_get_free_license: str,
         is_free_license: bool,
-        price_in_cents_with_discount: int
+        price_in_cents_with_discount: int,
+        **kwargs
     ):
         self.packageid = packageid
         self.percent_savings_text = percent_savings_text
@@ -77,21 +79,21 @@ class SteamStoreAppPackageGroup(BaseModel):
 
 class SteamStoreAppCategory(BaseModel):
 
-    def __init__(self, id: int, description: str):
+    def __init__(self, id: int, description: str, **kwargs):
         self.id = id
         self.description = description
 
 
 class SteamStoreAppGenre(BaseModel):
 
-    def __init__(self, id: str, description: str):
+    def __init__(self, id: str, description: str, **kwargs):
         self.id = id
         self.description = description
 
 
 class SteamStoreAppScreenshot(BaseModel):
 
-    def __init__(self, id: int, path_thumbnail: str, path_full: str):
+    def __init__(self, id: int, path_thumbnail: str, path_full: str, **kwargs):
         self.id = id
         self.path_thumbnail = path_thumbnail
         self.path_full = path_full
@@ -106,7 +108,8 @@ class SteamStoreAppMovie(BaseModel):
         thumbnail: str,
         webm: tp.Dict[str, str],
         mp4: tp.Dict[str, str],
-        highlight: bool
+        highlight: bool,
+        **kwargs
     ):
         self.id = id
         self.name = name
@@ -118,21 +121,21 @@ class SteamStoreAppMovie(BaseModel):
 
 class SteamStoreAppMetacriticScore(BaseModel):
 
-    def __init__(self, score: int, url: tp.Optional[str] = None):
+    def __init__(self, score: int, url: tp.Optional[str] = None, **kwargs):
         self.score = score
         self.url = url
 
 
 class SteamStoreAppAchievementHighlighted(BaseModel):
 
-    def __init__(self, name: str, path: str):
+    def __init__(self, name: str, path: str, **kwargs):
         self.name = name
         self.path = path
 
 
 class SteamStoreAppAchievements(BaseModel):
 
-    def __init__(self, total: int, highlighted: tp.List[SteamStoreAppAchievementHighlighted]):
+    def __init__(self, total: int, highlighted: tp.List[SteamStoreAppAchievementHighlighted], **kwargs):
         self.total = total
         self.highlighted = highlighted
 
@@ -146,21 +149,21 @@ class SteamStoreAppAchievements(BaseModel):
 
 class SteamStoreAppReleaseDate(BaseModel):
 
-    def __init__(self, coming_soon: bool, date: str):
+    def __init__(self, coming_soon: bool, date: str, **kwargs):
         self.coming_soon = coming_soon
         self.date = date if date else None
 
 
 class SteamStoreAppSupportInfo(BaseModel):
 
-    def __init__(self, url: str, email: str):
+    def __init__(self, url: str, email: str, **kwargs):
         self.url = url
         self.email = email
 
 
 class SteamStoreAppContentDescriptors(BaseModel):
 
-    def __init__(self, ids: tp.List[int], notes: str):
+    def __init__(self, ids: tp.List[int], notes: str, **kwargs):
         self.ids = ids
         self.notes = notes
 

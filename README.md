@@ -62,6 +62,7 @@ _feel free to contribute and create issues_
 
 ## Plans
 
+- rewrite on official [notion api](https://developers.notion.com/)
 - connect to existing page
 - update existing page values, do not recreate databases
 - add options for setting status
