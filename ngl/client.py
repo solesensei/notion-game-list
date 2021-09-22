@@ -92,13 +92,14 @@ class NotionGameList:
     def _parse_date(date_str: tp.Optional[str]):
         if not date_str:
             return None
-        check_date_formats = (r"%d %b, %Y", r"%b %d, %Y", r"%b %Y")
+        check_date_formats = (r"%d %b, %Y", r"%b %d, %Y", r"%b %Y", r"%d %b %Y", r"%b %d %Y", r"%Y")
         for fmt in check_date_formats:
             try:
                 return datetime.strptime(date_str, fmt).date()
             except ValueError:
                 pass
-        raise ServiceError(msg="time data '{}' does not match any of formats '{}'".format(date_str, "', '".join(check_date_formats)))
+        echo.r("\nDate: '{}' does not match any of formats '{}' | skip".format(date_str, "', '".join(check_date_formats)))
+        return None
 
     def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock, use_bg_as_cover: bool = False) -> bool:
         row_data = {"title": game.name, "platforms": game.platforms, "release_date": self._parse_date(game.release_date), "notes": f"Playtime: {game.playtime}"}
@@ -114,7 +115,7 @@ class NotionGameList:
 
     def import_game_list(self, game_list: tp.List[GameInfo], game_page: CollectionViewPageBlock, **kwargs) -> tp.List[GameInfo]:
         errors = []
-        for i, game in enumerate(game_list):
+        for i, game in enumerate(game_list, start=1):
             echo.c(f"Imported: {i}/{len(game_list)}", end="\r")
             if not self.add_game(game, game_page, **kwargs):
                 errors.append(game)
