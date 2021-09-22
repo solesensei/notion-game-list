@@ -62,19 +62,19 @@ try:
 
     if errors:
         echo.r("Not imported games: ")
-        for e in sorted(errors, key=lambda x: x.name):
-            echo.r(f"- {e.name}")
+        for error in sorted(errors, key=lambda x: x.name):
+            echo.r(f"- {error.name}")
     echo.g(f"Imported: {imported}/{len(game_list)}\n")
 
-except ServiceError as e:
-    echo(e)
+except ServiceError as err:
+    echo(err)
     if DEBUG:
-        raise e
+        raise err
     soft_exit(1)
-except (Exception, KeyboardInterrupt) as e:
-    echo(f"\n{e.__class__.__name__}: {e}", file=sys.stderr)
+except (Exception, KeyboardInterrupt) as err:
+    echo(f"\n{err.__class__.__name__}: {err}", file=sys.stderr)
     if DEBUG:
-        raise e
+        raise err
     soft_exit(1)
 
 echo.m("Completed!")

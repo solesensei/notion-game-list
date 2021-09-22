@@ -93,13 +93,12 @@ class NotionGameList:
         if not date_str:
             return None
         check_date_formats = (r"%d %b, %Y", r"%b %d, %Y", r"%b %Y")
-        e = None
         for fmt in check_date_formats:
             try:
                 return datetime.strptime(date_str, fmt).date()
-            except ValueError as e:
+            except ValueError:
                 pass
-        raise ServiceError(msg="time data '{}' does not match any of formats '{}'".format(date_str, "', '".join(check_date_formats)), error=e)
+        raise ServiceError(msg="time data '{}' does not match any of formats '{}'".format(date_str, "', '".join(check_date_formats)))
 
     def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock, use_bg_as_cover: bool = False) -> bool:
         row_data = {"title": game.name, "platforms": game.platforms, "release_date": self._parse_date(game.release_date), "notes": f"Playtime: {game.playtime}"}
