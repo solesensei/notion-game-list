@@ -140,7 +140,7 @@ class SteamGamesLibrary(GamesLibrary):
                             continue
                         echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
                         steam_game = None
-
+                        continue
                     logo_uri = steam_game.header_image if steam_game is not None and steam_game.header_image else self._image_link(game_id, g.img_logo_url)
                     game_info = GameInfo(
                         id=game_id,
