@@ -129,17 +129,20 @@ class SteamGamesLibrary(GamesLibrary):
                     if game_id in self._games:
                         continue
                     echo.c(" " * 100 + f"\rFetching [{i}/{number_of_games}]: {g.name}", end="\r")
-                    try:
-                        steam_game = self.store.get_game_info(game_id) if not library_only else None
-                        if steam_game is None and not library_only:
-                            echo.m(f"Game {g.name} id:{game_id} not fetched from Steam store, skip it!")
-                            self._store_skipped.append(game_id)
-                    except SteamApiNotFoundError:
-                        if skip_non_steam:
+                    steam_game = None
+                    if not library_only:
+                        # Fetch game info from steam store
+                        try:
+                            steam_game = self.store.get_game_info(game_id)
+                        except SteamApiNotFoundError:
+                            pass
+
+                        if steam_game is None and skip_non_steam:
                             echo.m(f"Game {g.name} id:{game_id} not found in Steam store, skip it")
+                            self._store_skipped.append(game_id)
                             continue
+
                         echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
-                        steam_game = None
 
                     logo_uri = None
                     if steam_game is not None and steam_game.header_image:
