@@ -98,7 +98,7 @@ class SteamGamesLibrary(GamesLibrary):
         return None
 
     @staticmethod
-    def _playtime_format(playtime_in_minutes):
+    def _playtime_format(playtime_in_minutes: int) -> str:
         if playtime_in_minutes == 0:
             return "never"
         if playtime_in_minutes < 120:
@@ -152,7 +152,7 @@ class SteamGamesLibrary(GamesLibrary):
                         name=g.name,
                         platforms=[PLATFORM],
                         release_date=steam_game.release_date.date if steam_game is not None else None,
-                        playtime=self._playtime_format(g.playtime_forever),
+                        playtime=self._playtime_format(g.playtime_forever) if getattr(g, "playtime_forever", None) is not None else None,
                         logo_uri=logo_uri,
                         bg_uri=self._get_bg_image(game_id),
                         icon_uri=self._image_link(game_id, g.img_icon_url) if getattr(g, "img_icon_url", None) is not None else None,
