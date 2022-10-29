@@ -25,6 +25,8 @@ try:
     parser.add_argument("--steam-no-cache", help="Do not use cached fetched games", action="store_true")
     args = parser.parse_args()
 
+    assert not (args.skip_non_steam and args.use_only_library), "You can't use --skip-non-steam and --use-only-library together"
+
     STEAM_USER = args.steam_user or STEAM_USER
 
     echo.y("Logging into Notion...")
