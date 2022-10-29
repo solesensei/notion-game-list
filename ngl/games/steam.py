@@ -141,7 +141,12 @@ class SteamGamesLibrary(GamesLibrary):
                         echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
                         steam_game = None
 
-                    logo_uri = steam_game.header_image if steam_game is not None and steam_game.header_image else self._image_link(game_id, g.img_logo_url)
+                    logo_uri = None
+                    if steam_game is not None and steam_game.header_image:
+                        logo_uri = steam_game.header_image
+                    elif getattr(g, "img_logo_url", None):
+                        logo_uri = self._image_link(game_id, g.img_logo_url)
+
                     game_info = GameInfo(
                         id=game_id,
                         name=g.name,
@@ -150,7 +155,7 @@ class SteamGamesLibrary(GamesLibrary):
                         playtime=self._playtime_format(g.playtime_forever),
                         logo_uri=logo_uri,
                         bg_uri=self._get_bg_image(game_id),
-                        icon_uri=self._image_link(game_id, g.img_icon_url),
+                        icon_uri=self._image_link(game_id, g.img_icon_url) if getattr(g, "img_icon_url", None) is not None else None,
                         free=steam_game.is_free if steam_game is not None else None,
                     )
                     if steam_game is not None:
