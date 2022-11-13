@@ -108,7 +108,6 @@ class NotionGameList:
 
     def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock, use_bg_as_cover: bool = False) -> bool:
         row_data = {"title": game.name, "platforms": game.platforms, "release_date": self._parse_date(game), "notes": f"Playtime: {game.playtime}", "playtime": game.playtime_minutes}
-        echo.m(f"Add game '{row_data}'")
         row = self._add_row(game_page.collection, **row_data)
         row.icon = game.icon_uri or self._gl_icon
         with self.client.as_atomic_transaction():
