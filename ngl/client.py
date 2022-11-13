@@ -89,7 +89,8 @@ class NotionGameList:
         return collection.add_row(**row_data)
 
     @staticmethod
-    def _parse_date(date_str: tp.Optional[str]):
+    def _parse_date(game: GameInfo):
+        date_str = game.release_date
         if not date_str:
             return None
         check_date_formats = (r"%d %b, %Y", r"%b %d, %Y", r"%b %Y", r"%d %b %Y", r"%b %d %Y", r"%Y")
@@ -98,11 +99,16 @@ class NotionGameList:
                 return datetime.strptime(date_str, fmt).date()
             except ValueError:
                 pass
-        echo.r("\nDate: '{}' does not match any of formats '{}' | skip".format(date_str, "', '".join(check_date_formats)))
+        echo.r(
+            "\nGame '{}:{}' | Release Date: '{}' does not match any of formats '{}' | skip".format(
+                game.name, game.id, date_str, "', '".join(check_date_formats)
+            )
+        )
         return None
 
     def add_game(self, game: GameInfo, game_page: CollectionViewPageBlock, use_bg_as_cover: bool = False) -> bool:
-        row_data = {"title": game.name, "platforms": game.platforms, "release_date": self._parse_date(game.release_date), "notes": f"Playtime: {game.playtime}", "_playtime": game.playtime_minutes}
+        row_data = {"title": game.name, "platforms": game.platforms, "release_date": self._parse_date(game), "notes": f"Playtime: {game.playtime}", "playtime": game.playtime_minutes}
+        echo.m(f"Add game '{row_data}'")
         row = self._add_row(game_page.collection, **row_data)
         row.icon = game.icon_uri or self._gl_icon
         with self.client.as_atomic_transaction():
@@ -265,7 +271,7 @@ class NotionGameList:
             "notes": {"name": "Notes", "type": "text"},
             "time": {"name": "Time", "type": "date"},
             "release_date": {"name": "Release Date", "type": "date"},
-            "_playtime": {"name": "_playtime", "type": "number"},
+            "playtime": {"name": "playtime", "type": "number"},
         }
 
     @staticmethod
@@ -309,7 +315,7 @@ class NotionGameList:
                         "width": 200
                     },
                     {
-                        "property": "_playtime",
+                        "property": "playtime",
                         "visible": False,
                         "width": 100,
                     }
