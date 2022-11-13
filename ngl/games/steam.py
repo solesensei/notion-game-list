@@ -142,7 +142,8 @@ class SteamGamesLibrary(GamesLibrary):
                             self._store_skipped.append(game_id)
                             continue
 
-                        echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
+                        if steam_game is None:
+                            echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
 
                     logo_uri = None
                     if steam_game is not None and steam_game.header_image:
@@ -156,6 +157,7 @@ class SteamGamesLibrary(GamesLibrary):
                         platforms=[PLATFORM],
                         release_date=steam_game.release_date.date if steam_game is not None else None,
                         playtime=self._playtime_format(g.playtime_forever) if getattr(g, "playtime_forever", None) is not None else None,
+                        playtime_minutes=g.playtime_forever if getattr(g, "playtime_forever", None) is not None else None,
                         logo_uri=logo_uri,
                         bg_uri=self._get_bg_image(game_id),
                         icon_uri=self._image_link(game_id, g.img_icon_url) if getattr(g, "img_icon_url", None) is not None else None,

@@ -14,6 +14,7 @@ class GameInfo:
         platforms: tp.List[str],
         release_date: tp.Optional[str] = None,
         playtime: tp.Optional[str] = None,
+        playtime_minutes: tp.Optional[int] = None,
         logo_uri: tp.Optional[str] = None,
         bg_uri: tp.Optional[str] = None,
         icon_uri: tp.Optional[str] = None,
@@ -24,6 +25,7 @@ class GameInfo:
         self.platforms = platforms
         self.release_date = release_date if release_date else None
         self.playtime = playtime if playtime else None
+        self.playtime_minutes = playtime_minutes if playtime_minutes else 0
         self.logo_uri = logo_uri if logo_uri else None
         self.bg_uri = bg_uri if bg_uri else None
         self.icon_uri = icon_uri if icon_uri else None
