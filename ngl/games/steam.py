@@ -142,7 +142,8 @@ class SteamGamesLibrary(GamesLibrary):
                             self._store_skipped.append(game_id)
                             continue
 
-                        echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
+                        if steam_game is None:
+                            echo.r(f"Game {g.name} id:{game_id} not found in Steam store, fetching details from library")
 
                     logo_uri = None
                     if steam_game is not None and steam_game.header_image:
