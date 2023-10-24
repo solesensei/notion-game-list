@@ -1,0 +1,57 @@
+# This github action workflow builds python executable for different platforms
+
+name: Build Tools
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.10.11]
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt -U
+          pip install pyinstaller -U
+      - name: Build
+        run: |
+          pyinstaller --console --hidden-import=pkg_resources.py2_warn --onefile main.py -n "main-${{ matrix.os }}"
+          sleep 1  # Allow pyinstaller to finish writing to stdout
+          ls -l dist
+      - name: Make Executable
+        if: matrix.os != 'windows-latest'
+        run: |
+          chmod +x "dist/main-${{ matrix.os }}"
+      - name: Upload Release Asset (Unix)
+        if: matrix.os != 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: dist/main-${{ matrix.os }}
+          asset_name: main-${{ matrix.os }}
+          asset_content_type: application/octet-stream
+      - name: Upload Release Asset (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: dist/main-${{ matrix.os }}.exe
+          asset_name: main-${{ matrix.os }}.exe
+          asset_content_type: application/octet-stream
