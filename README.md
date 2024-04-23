@@ -1,4 +1,4 @@
-# Notion Game List ![](https://img.shields.io/badge/version-0.1.0-blue) ![](https://app.travis-ci.com/solesensei/notion-game-list.svg?branch=master) [![discuss](https://img.shields.io/reddit/subreddit-subscribers/notion?label=Discuss%20r%2Fnotion-games-list&style=social)](https://www.reddit.com/r/Notion/comments/jiy1sb/notion_games_list/?utm_source=share&utm_medium=web2x&context=3)
+# Notion Game List ![](https://img.shields.io/badge/version-0.1.1-blue) ![](https://app.travis-ci.com/solesensei/notion-game-list.svg?branch=master) [![discuss](https://img.shields.io/reddit/subreddit-subscribers/notion?label=Discuss%20r%2Fnotion-games-list&style=social)](https://www.reddit.com/r/Notion/comments/jiy1sb/notion_games_list/?utm_source=share&utm_medium=web2x&context=3)
 
 
 All your games inside [Notion](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84).
@@ -10,6 +10,13 @@ All your games inside [Notion](https://www.notion.so/solesensei/Notion-Game-List
 Python 3.6+
 
 ```bash
+# Clone with submodules
+git clone --recurse-submodules git@github.com:solesensei/notion-game-list.git
+
+# Create virtual environment
+python -m venv notion-game-list-venv && source notion-game-list-venv/bin/activate
+
+# Install requirements
 pip install -r requirements.txt -U
 ```
 
