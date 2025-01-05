@@ -1,4 +1,4 @@
-# Notion Game List ![](https://img.shields.io/badge/version-0.1.1-blue) ![](https://app.travis-ci.com/solesensei/notion-game-list.svg?branch=master) [![discuss](https://img.shields.io/reddit/subreddit-subscribers/notion?label=Discuss%20r%2Fnotion-games-list&style=social)](https://www.reddit.com/r/Notion/comments/jiy1sb/notion_games_list/?utm_source=share&utm_medium=web2x&context=3)
+# Notion Game List ![](https://img.shields.io/badge/version-0.1.1-blue) ![](https://app.travis-ci.com/solesensei/notion-game-list.svg?branch=master) [![discuss](https://img.shields.io/reddit/subreddit-subscribers/notion?label=Discuss%20r%2Fnotion-games-list&style=social)](https://www.reddit.com/r/Notion/comments/jiy1sb/notion_games_list/?utm_source=share&utm_medium=web2x&context=3) <a href="https://www.buymeacoffee.com/solesensei"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" height="20px"></a>
 
 
 All your games inside [Notion](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84).
@@ -66,6 +66,8 @@ python main.py --steam-no-cache  # do not use game_info_cache.json, you can also
 _[result here](https://www.notion.so/solesensei/Notion-Game-List-generated-0d0d39993755415bb8812563a2781d84)_
 
 _feel free to contribute and create issues_
+
+<a href="https://www.buymeacoffee.com/solesensei" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 ## Plans
 
